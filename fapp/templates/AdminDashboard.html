@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Window Sales Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --dark: #14213d;
+            --light: #f8f9fa;
+            --gray: #8d99ae;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--dark), #1d3557);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .sidebar-header i {
+            font-size: 1.8rem;
+            color: var(--success);
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--success);
+        }
+        
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            padding-top: calc(var(--header-height) + 20px);
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 99;
+        }
+        
+        .search-container {
+            display: flex;
+            align-items: center;
+            background-color: #f0f2f5;
+            border-radius: 30px;
+            padding: 8px 15px;
+            width: 300px;
+        }
+        
+        .search-container input {
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 5px 10px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-left: 15px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .sales .stat-icon {
+            background-color: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+        
+        .agents .stat-icon {
+            background-color: rgba(76, 201, 240, 0.15);
+            color: var(--success);
+        }
+        
+        .pending .stat-icon {
+            background-color: rgba(247, 37, 133, 0.15);
+            color: var(--warning);
+        }
+        
+        .revenue .stat-icon {
+            background-color: rgba(20, 33, 61, 0.15);
+            color: var(--dark);
+        }
+        
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-header h2 {
+            font-size: 1.4rem;
+            color: var(--dark);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #f8f9fa;
+        }
+        
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status.ready {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+        
+        .status.processing {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #ff9800;
+        }
+        
+        .status.pending {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--warning);
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-left: 10px;
+            transition: color 0.3s;
+        }
+        
+        .action-btn:hover {
+            color: var(--primary);
+        }
+        
+        /* Email Form */
+        .email-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .email-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-header h2, .menu-item span {
+                display: none;
+            }
+            
+            .sidebar-header {
+                justify-content: center;
+            }
+            
+            .menu-item {
+                justify-content: center;
+                padding: 15px 0;
+            }
+            
+            .menu-item i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .header {
+                left: 70px;
+            }
+            
+            .search-container {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-window-restore"></i>
+            <h2>Window Sales Admin</h2>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <a href="{% url 'order_windows' %}" class="menu-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Orders</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Agents</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-window-maximize"></i>
+                <span>Products</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-envelope"></i>
+                <span>Notifications</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="user-info">
+            <i class="fas fa-bell"></i>
+            <img src="" alt="Admin">
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Stats Section -->
+        <div class="stats-grid">
+            <div class="stat-card sales">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{total_orders }}</h3>
+                    <p>Total Window Sales</p>
+                </div>
+            </div>
+            
+            <div class="stat-card agents">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{total_agents}}</h3>
+                    <p>Total Agents</p>
+                </div>
+            </div>
+            
+            <div class="stat-card pending">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{pending_orders}}</h3>
+                    <p>Pending Orders</p>
+                </div>
+            </div>
+            
+            <div class="stat-card revenue">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{total_revenue}}</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ready Windows Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Ready Windows for Delivery</h2>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New
+                </button>
+            </div>
+               
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Window Type</th>
+                            <th>Dimensions</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    {% for order in orders %}
+                    <tbody> 
+                        <tr>
+                            <td>{{order.id}}</td>
+                            <td>{{order.customer_name}}</td>
+                            <td>{% for window in order.windows.all %}
+                                 {{ window.type }} ({{ window.glass_type }})<br>
+                                 {% empty %}
+                                   No windows
+                                 {% endfor %}</td>
+                            <td>{% for window in order.windows.all %}
+                                 {{ window.height }} x {{ window.width }}<br>
+                                 {% endfor %}</td>
+                            
+                            <td>{{orders.created_at }}</td>
+                            <td><span class="status ready">{{order.status}}</span></td>
+                            <td>
+                                <button class="action-btn send-email" valid="order.customer_name" title="Send Email">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                                <button class="action-btn" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>  
+        </div>
+
+        <!-- Agents Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Sales Agents</h2>
+                <button class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Add Agent
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>staff</th>
+                            <th>Revenue</th>
+                            <th>Sales (Last 30 Days)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    {% for User in Users %}
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{User.username}}</td>
+                            <td>{{User.email}}</td>
+                            <td>{{staff}}</td>
+                            <td>${{ revenue_by_agent}}</td>
+                            <td>{{agent_sales_count}}</td>
+                            <td><span class="status ready">Active</span></td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <!-- Send Email Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Send Window Ready Notification</h2>
+            </div>
+            
+            <form class="email-form">
+                <div class="form-group">
+                    <label for="customer">Customer</label>
+                     <input type="text" id="customer" palceholder="Customer Name" >
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="customer@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Email Subject</label>
+                    <input type="text" id="subject" value="Your Window Order is Ready!">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="message">Email Message</label>
+                    <textarea id="message">Dear [Customer Name],
+
+We're excited to let you know that your window order is now ready for pickup or delivery!
+
+Order Details:
+- Order ID: [Order ID]
+- Window Type: [Window Type]
+- Dimensions: [Dimensions]
+
+Please contact us to schedule a delivery or pickup time at your convenience.
+
+Thank you for choosing our services!
+                    </textarea>
+                </div>
+                
+                <div class="form-group full-width">
+                    <button type="button" class="btn btn-primary" id="send-email-btn">
+                        <i class="fas fa-paper-plane"></i> Send Notification Email
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Send email button functionality
+        document.querySelectorAll('.send-email').forEach(button => {
+            button.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const orderId = row.cells[0].textContent;
+                const customer = row.cells[1].textContent;
+                
+                // Set values in the email form
+                document.getElementById('customer').value = ''; // Would be dynamic in real app
+                document.getElementById('email').value = customer.toLowerCase().replace(' ', '.') + '@example.com';
+                document.getElementById('subject').value = `Your Window Order ${orderId} is Ready!`;
+                
+                // Update message with customer details
+                const message = `Dear ${customer},
+
+We're excited to let you know that your window order is now ready for pickup or delivery!
+
+Order Details:
+- Order ID: ${orderId}
+- Window Type: ${row.cells[2].textContent}
+- Dimensions: ${row.cells[3].textContent}
+
+Please contact us to schedule a delivery or pickup time at your convenience.
+
+Thank you for choosing our services!`;
+                
+                document.getElementById('message').value = message;
+                
+                // Scroll to email form
+                document.querySelector('.email-form').scrollIntoView({ behavior: 'smooth' });
+                
+                // Show success message
+                alert(`Email notification prepared for ${customer} (${orderId}). Please review and send.`);
+            });
+        });
+        
+        // Send email form functionality
+        document.getElementById('send-email-btn').addEventListener('click', function() {
+            const customer = document.getElementById('customer').value;
+            const email = document.getElementById('email').value;
+            
+            if (!customer || !email) {
+                alert('Please select a customer and enter a valid email address.');
+                return;
+            }
+            
+            alert('Notification email sent successfully!');
+            
+            // Reset form
+            document.getElementById('customer').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('subject').value = 'Your Window Order is Ready!';
+            document.getElementById('message').value = `Dear [Customer Name],
+
+We're excited to let you know that your window order is now ready for pickup or delivery!
+
+Order Details:
+- Order ID: [Order ID]
+- Window Type: [Window Type]
+- Dimensions: [Dimensions]
+
+Please contact us to schedule a delivery or pickup time at your convenience.
+
+Thank you for choosing our services!`;
+        });
+        
+        // Menu item click functionality
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelector('.menu-item.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

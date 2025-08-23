@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Windows</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    .card {
+      border-radius: 15px;
+      overflow: hidden;
+      border: none;
+    }
+    .card-header {
+      background: linear-gradient(90deg, #2c3e50, #4a6491);
+      color: white;
+      padding: 20px;
+    }
+    .window-order {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .window-order:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+    }
+    .remove-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
+    .summary-item {
+      border-bottom: 1px dashed #ddd;
+      padding: 10px 0;
+    }
+    .price-highlight {
+      font-size: 1.2rem;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #3498db, #2c3e50);
+      border: none;
+    }
+    .btn-success {
+      background: linear-gradient(90deg, #27ae60, #219653);
+      border: none;
+    }
+    .btn-danger {
+      background: linear-gradient(90deg, #e74c3c, #c0392b);
+      border: none;
+    }
+    .modal-header {
+      background: linear-gradient(90deg, #2c3e50, #4a6491);
+      color: white;
+    }
+    .confirmation-icon {
+      color: #27ae60;
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header">
+      <h2 class="mb-0"><i class="fas fa-window-restore me-2"></i>Place Your Window Order</h2>
+    </div>
+    <div class="card-body">
+      <form id="orderForm" method="post">
+        {% csrf_token %}z
+        
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="customer_name" class="form-label"><i class="fas fa-user me-2"></i>Customer Name</label>
+              <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="customer_phone" class="form-label"><i class="fas fa-phone me-2"></i>Phone Number</label>
+              <input type="tel" class="form-control" id="customer_phone" name="customer_phone">
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="customer_email" class="form-label"><i class="fas fa-envelope me-2"></i>Email</label>
+              <input type="email" class="form-control" id="customer_email" name="customer_email">
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="customer_address" class="form-label"><i class="fas fa-map-marker-alt me-2"></i>Address</label>
+          <textarea class="form-control" id="customer_address" name="customer_address" rows="2" required></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="note" class="form-label"><i class="fas fa-sticky-note me-2"></i>Special Instructions</label>
+          <textarea class="form-control" id="note" name="note" rows="2"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4><i class="fas fa-windows me-2"></i>Window Details</h4>
+          <button type="button" class="btn btn-primary" onclick="addWindow()">
+            <i class="fas fa-plus me-2"></i>Add Window
+          </button>
+        </div>
+        
+        <div id="windows-container">
+          <div class="window-order border rounded p-4 mb-4 bg-light position-relative">
+            <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="removeWindow(this)">
+              <i class="fas fa-times"></i>
+            </button>
+            <h4 class="text-secondary"><i class="fas fa-window-maximize me-2"></i>Window 1</h4>
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Type</label>
+                <select class="form-select" name="window_type_1" required>
+                  <option value="">Select type</option>
+                  <option value="Single-hung">Single-hung</option>
+                  <option value="Double-hung">Double-hung</option>
+                  <option value="Casement">Casement</option>
+                  <option value="Sliding">Sliding</option>
+                  <option value="Awning">Awning</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Glass Type</label>
+                <select class="form-select" name="glass_type_1" required>
+                  <option value="">Select glass</option>
+                  <option value="Clear">Clear</option>
+                  <option value="Tinted">Tinted</option>
+                  <option value="Low-E">Low-E</option>
+                  <option value="Tempered">Tempered</option>
+                  <option value="Laminated">Laminated</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Width (Inches)</label>
+                <input type="number" class="form-control dimension" name="window_width_1" min="1" step="0.5" required oninput="updatePrices()">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Height (Inches)</label>
+                <input type="number" class="form-control dimension" name="window_height_1" min="1" step="0.5" required oninput="updatePrices()">
+              </div>
+              <div class="col-12 mt-2">
+                <strong>Window Price: $<span class="window-price">0.00</span></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+          <div>
+            <h4>Total Price: <span class="price-highlight">$<span id="total-price">0.00</span></span></h4>
+          </div>
+          <button type="button" class="btn btn-success btn-lg" id="confirmOrderBtn">
+            <i class="fas fa-check-circle me-2"></i>Review Order
+          </button>
+        </div>
+      </form>
+
+      {% if messages %}
+      <div class="alert alert-info mt-3">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmationModalLabel"><i class="fas fa-check-circle me-2"></i>Confirm Your Order</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <div class="confirmation-icon">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <h3>Please Review Your Order</h3>
+          <p class="text-muted">Verify all details before submitting your order</p>
+        </div>
+        
+        <div class="mb-4 p-3 border rounded bg-light">
+          <h5><i class="fas fa-user me-2"></i>Customer Information</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> <span id="confirm-name"></span></p>
+              <p><strong>Phone:</strong> <span id="confirm-phone"></span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Email:</strong> <span id="confirm-email"></span></p>
+              <p><strong>Address:</strong> <span id="confirm-address"></span></p>
+            </div>
+          </div>
+          <p><strong>Special Instructions:</strong> <span id="confirm-note"></span></p>
+        </div>
+        
+        <div class="mb-4">
+          <h5><i class="fas fa-windows me-2"></i>Window Details</h5>
+          <div id="confirm-windows"></div>
+        </div>
+        
+        <div class="d-flex justify-content-end">
+          <h4>Total Price: <span class="price-highlight">$<span id="confirm-total-price">0.00</span></span></h4>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-edit me-2"></i>Edit Order</button>
+        <button type="button" class="btn btn-success" id="finalConfirmBtn"><i class="fas fa-paper-plane me-2"></i>Confirm & Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let windowCount = 1;
+const priceRate = 0.05;
+const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+
+function addWindow() {
+  windowCount++;
+  const container = document.getElementById('windows-container');
+  const div = document.createElement('div');
+  div.className = 'window-order border rounded p-4 mb-4 bg-light position-relative';
+  div.innerHTML = `
+    <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="removeWindow(this)">
+      <i class="fas fa-times"></i>
+    </button>
+    <h4 class="text-secondary"><i class="fas fa-window-maximize me-2"></i>Window ${windowCount}</h4>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Type</label>
+        <select class="form-select" name="window_type_${windowCount}" required>
+          <option value="">Select type</option>
+          <option value="Single-hung">Single-hung</option>
+          <option value="Double-hung">Double-hung</option>
+          <option value="Casement">Casement</option>
+          <option value="Sliding">Sliding</option>
+          <option value="Awning">Awning</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Glass Type</label>
+        <select class="form-select" name="glass_type_${windowCount}" required>
+          <option value="">Select glass</option>
+          <option value="Clear">Clear</option>
+          <option value="Tinted">Tinted</option>
+          <option value="Low-E">Low-E</option>
+          <option value="Tempered">Tempered</option>
+          <option value="Laminated">Laminated</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Width (Inches)</label>
+        <input type="number" class="form-control dimension" name="window_width_${windowCount}" min="1" step="0.5" required oninput="updatePrices()">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Height (Inches)</label>
+        <input type="number" class="form-control dimension" name="window_height_${windowCount}" min="1" step="0.5" required oninput="updatePrices()">
+      </div>
+      <div class="col-12 mt-2">
+        <strong>Window Price: $<span class="window-price">0.00</span></strong>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+function removeWindow(button) {
+  button.closest('.window-order').remove();
+  updatePrices();
+}
+
+function updatePrices() {
+  let total = 0.0;
+  const orders = document.querySelectorAll('.window-order');
+
+  orders.forEach(order => {
+    const width = parseFloat(order.querySelector('input[name*="width"]').value) || 0;
+    const height = parseFloat(order.querySelector('input[name*="height"]').value) || 0;
+    const area = width * height;
+    const price = parseFloat((area * priceRate).toFixed(2));
+
+    order.querySelector('.window-price').innerText = price.toFixed(2);
+    total += price;
+  });
+
+  document.getElementById('total-price').innerText = total.toFixed(2);
+}
+
+// Confirmation functions
+document.getElementById('confirmOrderBtn').addEventListener('click', function() {
+  // Validate required fields
+  const name = document.getElementById('customer_name').value;
+  const address = document.getElementById('customer_address').value;
+  
+  if (!name || !address) {
+    alert('Please fill in all required customer information');
+    return;
+  }
+  
+  // Check if at least one window has valid dimensions
+  let validWindow = false;
+  const orders = document.querySelectorAll('.window-order');
+  orders.forEach(order => {
+    const width = parseFloat(order.querySelector('input[name*="width"]').value) || 0;
+    const height = parseFloat(order.querySelector('input[name*="height"]').value) || 0;
+    if (width > 0 && height > 0) {
+      validWindow = true;
+    }
+  });
+  
+  if (!validWindow) {
+    alert('Please add at least one window with valid dimensions');
+    return;
+  }
+  
+  // Populate confirmation modal
+  document.getElementById('confirm-name').innerText = name;
+  document.getElementById('confirm-phone').innerText = document.getElementById('customer_phone').value || 'N/A';
+  document.getElementById('confirm-email').innerText = document.getElementById('customer_email').value || 'N/A';
+  document.getElementById('confirm-address').innerText = address;
+  document.getElementById('confirm-note').innerText = document.getElementById('note').value || 'None';
+  document.getElementById('confirm-total-price').innerText = document.getElementById('total-price').innerText;
+  
+  // Populate window details
+  let windowsHtml = '';
+  orders.forEach((order, index) => {
+    const type = order.querySelector(`select[name="window_type_${index+1}"]`).value || 'N/A';
+    const glassType = order.querySelector(`select[name="glass_type_${index+1}"]`).value || 'N/A';
+    const width = order.querySelector(`input[name="window_width_${index+1}"]`).value;
+    const height = order.querySelector(`input[name="window_height_${index+1}"]`).value;
+    const price = order.querySelector('.window-price').textContent;
+    
+    windowsHtml += `
+      <div class="summary-item">
+        <div class="d-flex justify-content-between">
+          <h6>Window ${index+1}</h6>
+          <span class="price-highlight">$${price}</span>
+        </div>
+        <p><strong>Type:</strong> ${type}</p>
+        <p><strong>Glass:</strong> ${glassType}</p>
+        <p><strong>Dimensions:</strong> ${width}" × ${height}"</p>
+      </div>
+    `;
+  });
+  
+  document.getElementById('confirm-windows').innerHTML = windowsHtml;
+  
+  // Show the modal
+  confirmationModal.show();
+});
+
+// Final confirmation button
+document.getElementById('finalConfirmBtn').addEventListener('click', function() {
+  // redirect to payment page or submit the form
+  document.getElementById('orderForm').submit();
+});
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+  updatePrices();
+});
+</script>
+
+</body>
+</html> ` `

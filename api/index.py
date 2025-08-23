@@ -1,0 +1,1 @@
+from Falcon.wsgi import fapp

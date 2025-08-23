@@ -1,0 +1,15 @@
+{
+  "trailingSlash": true,
+  "builds": [
+    {
+      "src": "Falcon/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "Falcon/wsgi.py"
+    }
+  ]
+}
