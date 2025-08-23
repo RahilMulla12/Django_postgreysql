@@ -6,32 +6,11 @@
       "use": "@vercel/python"
     }
   ],
-  "rewrites": [
-    {
-      "source": "/product",
-      "destination": "/product/"
-    },
-    {
-      "source": "/order_windows",
-      "destination": "/order_windows/"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/old-page",
-      "destination": "/new-page",
-      "permanent": true
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  "routes": [
+        {
+        "src": "/(.*)",
+        "dest": "Falcon/wsgi.py"
+        }
+    ]
+
 }
