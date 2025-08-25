@@ -74,29 +74,19 @@ WSGI_APPLICATION = 'Falcon.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 import os
-from decouple import config
-import dj_database_url
-# Detect if running on Vercel
-ON_VERCEL = os.getenv("VERCEL") == "1"
 
-if ON_VERCEL:
-     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('postgresql://postgres:[rahil@1212]@db.vglwdffwirlvhbyvlrbv.supabase.co:5432/postgres'), # Your Supabase connection string
-            conn_max_age=600,
-        )
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',  # required
+        'NAME': os.environ.get('postgres'),
+        'USER': os.environ.get('postgres.vglwdffwirlvhbyvlrbv '),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('aws-1-ap-south-1.pooler.supabase.com'),
+        'PORT': os.environ.get('6543', '5432'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'wind',
-            'USER': 'myuser',
-            'PASSWORD': 'rahil@1212',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
+}
+
 
 
 
