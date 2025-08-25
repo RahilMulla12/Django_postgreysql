@@ -19,10 +19,10 @@ class WindowOrder(models.Model):
         default='Pending'
     )
     note = models.TextField(blank=True, null=True)
-
+ 
 class Window(models.Model):
     order = models.ForeignKey(WindowOrder, on_delete=models.CASCADE, related_name='windows')
-    type = models.CharField(max_length=100)
+    type = models.CharField(max_length=100)     
     glass_type = models.CharField(max_length=100, default='Standard')
     width = models.FloatField()
     height = models.FloatField()

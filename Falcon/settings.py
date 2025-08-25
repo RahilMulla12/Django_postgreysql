@@ -73,16 +73,31 @@ WSGI_APPLICATION = 'Falcon.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "wind",
-        "USER": "myuser",
-        "PASSWORD": "rahil@1212",
-        "HOST": "localhost",   # e.g. localhost or a cloud host
-        "PORT": "5432",           # default PostgreSQL port
+import os
+from decouple import config
+import dj_database_url
+# Detect if running on Vercel
+ON_VERCEL = os.getenv("VERCEL") == "1"
+
+if ON_VERCEL:
+     DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('postgresql://postgres:[rahil@1212]@db.vglwdffwirlvhbyvlrbv.supabase.co:5432/postgres'), # Your Supabase connection string
+            conn_max_age=600,
+        )
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'wind',
+            'USER': 'myuser',
+            'PASSWORD': 'rahil@1212',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+
 
 
 
@@ -122,7 +137,7 @@ import os
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
