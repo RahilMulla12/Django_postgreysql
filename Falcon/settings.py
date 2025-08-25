@@ -81,8 +81,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',  # required
         'NAME': os.environ.get('postgres'),
         'USER': os.environ.get('postgres.vglwdffwirlvhbyvlrbv '),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('aws-1-ap-south-1.pooler.supabase.com'),
+        'PASSWORD': os.environ.get('rahil@1212'),
+        'HOST': os.environ.get('aws-1-ap-south-1.pooler.supabase.com',locals),
         'PORT': os.environ.get('6543', '5432'),
     }
 }
