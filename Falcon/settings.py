@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app", ".now.sh"]
 INSTALLED_APPS = [
     'fapp',
     'django.contrib.admin',
-    'django.contrib.auth',
+    'django.contrib.auth',  
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -77,15 +77,16 @@ import os
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # required
-        'NAME': os.environ.get('postgres'),
-        'USER': os.environ.get('postgres.vglwdffwirlvhbyvlrbv '),
-        'PASSWORD': os.environ.get('rahil@1212'),
-        'HOST': os.environ.get('aws-1-ap-south-1.pooler.supabase.com',locals),
-        'PORT': os.environ.get('6543', '5432'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",  # database name (check Supabase Project Settings → Database)
+        "USER": "postgres.vglwdffwirlvhbyvlrbv",  # database user (usually 'postgres' on Supabase)
+        "PASSWORD": "rahil@1212",  # the password from Supabase
+        "HOST": "aws-1-ap-south-1.pooler.supabase.com",  # copy from Supabase connection info
+        "PORT": "6543",
     }
 }
+
 
 
 
