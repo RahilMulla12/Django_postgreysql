@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,16 +50,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "Falcon.wsgi.application"
 
-# ✅ Direct Supabase database config
+# ✅ Database configuration
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get( "postgres"),
-        "USER": os.environ.get( "postgres.vglwdffwirlvhbyvlrbv"),
-        "PASSWORD": os.environ.get("rahil@1212"),
-        "HOST": os.environ.get("aws-1-ap-south-1.pooler.supabase.com"),
-        "PORT": os.environ.get( "6543"),
-    }
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
+    )
 }
 
 # Password validation
