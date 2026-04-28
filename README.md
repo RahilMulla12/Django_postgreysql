@@ -18,7 +18,7 @@ The project name is FALCON WINDOWS which is create on basis of a real world firm
 
 - **Backend:** Django (Python)
 - **Database:** PostgreSQL
-- **Deployment:** Vercel
+- **Deployment:** Vercel,Supabase
 - **Language:** Python 3
 - **Frontend:** Html ,Css ,javascript
 
